@@ -118,7 +118,7 @@ public:
     double GetRate()
     {
         int nCount = GetCount();
-        if(nCount < RATE_BUFFER_SIZE) {
+        if(nCount < 2) {
             return 0.0;
         }
         int64_t nMin = GetMinTimestamp();
@@ -140,6 +140,12 @@ public:
         READWRITE(nDataEnd);
         READWRITE(fBufferEmpty);
     }
+};
+
+enum update_mode_enum_t {
+    UPDATE_FALSE,
+    UPDATE_TRUE,
+    UPDATE_FAIL_ONLY
 };
 
 //
@@ -396,11 +402,9 @@ public:
 
     void AddSeenVote(uint256 nHash, int status);
 
-    void MasternodeRateUpdate(const CGovernanceObject& govobj);
+    bool MasternodeRateCheck(const CGovernanceObject& govobj, update_mode_enum_t eUpdateLast = UPDATE_FALSE);
 
-    bool MasternodeRateCheck(const CGovernanceObject& govobj, bool fUpdateFailStatus = false);
-
-    bool MasternodeRateCheck(const CGovernanceObject& govobj, bool fUpdateFailStatus, bool fForce, bool& fRateCheckBypassed);
+    bool MasternodeRateCheck(const CGovernanceObject& govobj, update_mode_enum_t eUpdateLast, bool fForce, bool& fRateCheckBypassed);
 
     bool ProcessVoteAndRelay(const CGovernanceVote& vote, CGovernanceException& exception) {
         bool fOK = ProcessVote(NULL, vote, exception);
